@@ -74,8 +74,8 @@ export const feedApi = createApi({
         if (data) replaceFeed(api, data);
       },
     }),
-    addComment: build.mutation<Feed, { id: string; text: string }>({
-      query: ({ id, text }) => ({ url: `/feeds/${id}/comments`, method: "POST", body: { text } }),
+    addThought: build.mutation<Feed, { id: string; text: string }>({
+      query: ({ id, text }) => ({ url: `/feeds/${id}/thoughts`, method: "POST", body: { text } }),
       transformResponse: (res: { feed: Feed }) => res.feed,
       onQueryStarted: async (_arg, api) => {
         const { data } = await api.queryFulfilled.catch(() => ({ data: null }));
@@ -193,7 +193,7 @@ export const {
   useUpdateFeedMutation,
   useDeleteFeedMutation,
   useToggleLikeMutation,
-  useAddCommentMutation,
+  useAddThoughtMutation,
   useGetMoviesQuery,
   useGetMovieQuery,
   useCreateMovieMutation,

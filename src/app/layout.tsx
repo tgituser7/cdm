@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   // Base for absolute URLs in link previews; set NEXT_PUBLIC_SITE_URL to the public site address in production.
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: "Cinema Dharshak Manch",
-  description: "Directors share updates from their films. Audiences like, rate and comment.",
+  description: "Directors share updates from their films. Audiences like, rate and share their thoughts.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

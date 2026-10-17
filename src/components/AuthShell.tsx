@@ -15,10 +15,10 @@ export default function AuthShell({ children }: { children: React.ReactNode }) {
           <h1 className="text-5xl font-extrabold tracking-tight leading-[1.05]">Where films meet their audience.</h1>
           <p className="mt-4 text-lg text-white/85">
             Directors share updates straight from set. Audiences near and far cheer them on with likes, ratings and
-            comments.
+            thoughts.
           </p>
           <ul className="mt-8 space-y-3 text-white/90">
-            {["Feeds from directors near you, first", "Rate films with half-star precision", "Join the conversation in the comments"].map(
+            {["Feeds from directors near you, first", "Rate films with half-star precision", "Join the conversation with your thoughts"].map(
               (t) => (
                 <li key={t} className="flex items-center gap-3">
                   <span className="w-6 h-6 rounded-full bg-white/20 grid place-items-center text-xs">✓</span>

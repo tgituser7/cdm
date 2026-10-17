@@ -20,7 +20,7 @@ export interface User {
   createdAt: string;
 }
 
-export interface Comment {
+export interface Thought {
   id: string;
   userId: string;
   userName: string;
@@ -99,7 +99,7 @@ export interface Movie {
 
 /**
  * A director's feed.
- * - "update": text + optional images; audiences like and comment.
+ * - "update": text + optional images; audiences like and share thoughts.
  * - "rating": shared via "Ask For Rating"; audiences rate and review `movie`.
  */
 export interface Feed {
@@ -120,7 +120,7 @@ export interface Feed {
   editedAt?: string;
   /** userIds who liked */
   likes: string[];
-  comments: Comment[];
+  thoughts: Thought[];
   /** How close the feed is to the signed-in viewer */
   proximity: "city" | "state" | "country" | null;
   distanceKm: number | null;

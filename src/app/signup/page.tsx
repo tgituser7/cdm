@@ -10,7 +10,7 @@ import { useAppDispatch, useSession } from "@/store/hooks";
 import { signup } from "@/store/sessionSlice";
 
 const ROLES: { value: Role; title: string; text: string; icon: string }[] = [
-  { value: "audience", title: "Audience", text: "Like, rate and comment on feeds", icon: "🍿" },
+  { value: "audience", title: "Audience", text: "Like, rate and share thoughts on feeds", icon: "🍿" },
   { value: "director", title: "Director", text: "Share updates and images from your films", icon: "🎬" },
 ];
 

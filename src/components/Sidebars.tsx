@@ -24,13 +24,13 @@ export function LeftSidebar({ feeds }: { feeds: Feed[] }) {
       return [
         ["Feeds", mine.length],
         ["Likes", mine.reduce((n, p) => n + p.likes.length, 0)],
-        ["Comments", mine.reduce((n, p) => n + p.comments.length, 0)],
+        ["Thoughts", mine.reduce((n, p) => n + p.thoughts.length, 0)],
       ] as const;
     }
     return [
       ["Liked", feeds.filter((p) => p.likes.includes(user.id)).length],
       ["Rated", feeds.filter((p) => p.movie?.myRating).length],
-      ["Comments", feeds.reduce((n, p) => n + p.comments.filter((c) => c.userId === user.id).length, 0)],
+      ["Thoughts", feeds.reduce((n, p) => n + p.thoughts.filter((c) => c.userId === user.id).length, 0)],
     ] as const;
   }, [user, feeds]);
 
@@ -69,7 +69,7 @@ export function LeftSidebar({ feeds }: { feeds: Feed[] }) {
           <div className="font-bold text-lg leading-snug">
             Your front-row seat to <span className="brand-text">Indian cinema</span>
           </div>
-          <p className="text-sm text-muted mt-2">Directors share updates and images. Join to like, rate and comment.</p>
+          <p className="text-sm text-muted mt-2">Directors share updates and images. Join to like, rate and share your thoughts.</p>
           <Link href="/signup" className="btn btn-primary w-full mt-4">
             Create account
           </Link>
@@ -113,7 +113,7 @@ export function RightSidebar({ feeds }: { feeds: Feed[] }) {
     return [...map.values()].sort((a, b) => b.likes - a.likes).slice(0, 5);
   }, [feeds]);
 
-  const mostDiscussed = useMemo(() => [...feeds].sort((a, b) => b.comments.length - a.comments.length)[0], [feeds]);
+  const mostDiscussed = useMemo(() => [...feeds].sort((a, b) => b.thoughts.length - a.thoughts.length)[0], [feeds]);
 
   return (
     <div className="space-y-4">
@@ -168,7 +168,7 @@ export function RightSidebar({ feeds }: { feeds: Feed[] }) {
         </section>
       )}
 
-      {mostDiscussed && mostDiscussed.comments.length > 0 && (
+      {mostDiscussed && mostDiscussed.thoughts.length > 0 && (
         <section className="card p-4">
           <h3 className="font-bold mb-2">Most discussed</h3>
           <Link href={`/feeds/${mostDiscussed.id}`} className="block group">
@@ -179,7 +179,7 @@ export function RightSidebar({ feeds }: { feeds: Feed[] }) {
             <div className="text-sm font-semibold group-hover:text-primary">
               {mostDiscussed.filmTitle ?? mostDiscussed.directorName}
             </div>
-            <div className="text-xs text-muted">{mostDiscussed.comments.length} comments</div>
+            <div className="text-xs text-muted">{mostDiscussed.thoughts.length} thought{mostDiscussed.thoughts.length === 1 ? "" : "s"}</div>
           </Link>
         </section>
       )}

@@ -28,7 +28,7 @@ export function HeartIcon({ filled, className = "", size = 20 }: P & { filled?: 
   );
 }
 
-export function CommentIcon({ className = "", size = 20 }: P) {
+export function ThoughtIcon({ className = "", size = 20 }: P) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} className={className} fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinejoin="round" aria-hidden>
       <path d="M4 5.5A1.5 1.5 0 015.5 4h13A1.5 1.5 0 0120 5.5v9a1.5 1.5 0 01-1.5 1.5H10l-4.5 4v-4h0A1.5 1.5 0 014 14.5z" />

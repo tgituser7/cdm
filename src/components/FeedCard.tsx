@@ -5,12 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { formatLocation } from "@/lib/geo";
 import { movieMeta } from "@/lib/movie";
 import type { Movie, Feed } from "@/lib/types";
-import { useAddCommentMutation, useDeleteFeedMutation, useToggleLikeMutation } from "@/store/feedApi";
+import { useAddThoughtMutation, useDeleteFeedMutation, useToggleLikeMutation } from "@/store/feedApi";
 import { useSession } from "@/store/hooks";
 import Avatar from "./Avatar";
 import ConfirmDialog from "./ConfirmDialog";
 import EditFeedDialog from "./EditFeedDialog";
-import { CommentIcon, DotsIcon, FilmIcon, HeartIcon, SendIcon, ShareIcon } from "./Icons";
+import { ThoughtIcon, DotsIcon, FilmIcon, HeartIcon, SendIcon, ShareIcon } from "./Icons";
 import { MovieImage, RateAndReview, RatingSummary, ReviewList } from "./MovieRating";
 import PhotoGrid from "./PhotoGrid";
 import ShareDialog from "./ShareDialog";
@@ -168,7 +168,7 @@ export default function FeedCard({ feed, expanded = false }: { feed: Feed; expan
           description={
             isRating
               ? `Ratings for ${feed.movie?.title} will close unless it has another rating feed. Existing ratings and reviews stay on the movie.`
-              : "This feed, its images, likes and comments will be removed. This can't be undone."
+              : "This feed, its images, likes and thoughts will be removed. This can't be undone."
           }
           confirmLabel="Delete feed"
           busyLabel="Deleting…"
@@ -220,7 +220,7 @@ function RatingFeedBody({ movie, expanded }: { movie: Movie; expanded: boolean }
   );
 }
 
-/** Normal feed: images, likes and comments. */
+/** Normal feed: images, likes and thoughts. */
 function UpdateFeedBody({
   feed,
   expanded,
@@ -234,14 +234,14 @@ function UpdateFeedBody({
 }) {
   const { user } = useSession();
   const [toggleLike] = useToggleLikeMutation();
-  const [addComment, { isLoading: commenting }] = useAddCommentMutation();
+  const [addThought, { isLoading: postingThought }] = useAddThoughtMutation();
   const [showAll, setShowAll] = useState(expanded);
-  const [comment, setComment] = useState("");
-  const commentRef = useRef<HTMLInputElement>(null);
+  const [thought, setThought] = useState("");
+  const thoughtRef = useRef<HTMLInputElement>(null);
 
   const liked = !!user && feed.likes.includes(user.id);
   const isAudience = user?.role === "audience";
-  const visibleComments = showAll ? feed.comments : feed.comments.slice(-2);
+  const visibleThoughts = showAll ? feed.thoughts : feed.thoughts.slice(-2);
 
   return (
     <>
@@ -256,9 +256,9 @@ function UpdateFeedBody({
             {feed.likes.length}
           </span>
         )}
-        {feed.comments.length > 0 && (
+        {feed.thoughts.length > 0 && (
           <button onClick={() => setShowAll(true)} className="ml-auto hover:underline cursor-pointer">
-            {feed.comments.length} comment{feed.comments.length === 1 ? "" : "s"}
+            {feed.thoughts.length} thought{feed.thoughts.length === 1 ? "" : "s"}
           </button>
         )}
       </div>
@@ -281,10 +281,10 @@ function UpdateFeedBody({
           needLogin={!user}
           onClick={() => {
             setShowAll(true);
-            setTimeout(() => commentRef.current?.focus(), 0);
+            setTimeout(() => thoughtRef.current?.focus(), 0);
           }}
-          icon={<CommentIcon />}
-          label="Comment"
+          icon={<ThoughtIcon />}
+          label="Thought"
         />
         {/* Anyone can share, signed in or not */}
         <button
@@ -298,18 +298,18 @@ function UpdateFeedBody({
 
       {user && !isAudience && (
         <p className="mx-4 sm:mx-5 mb-2 text-xs text-muted text-center">
-          Directors can see reactions. Only audience members can like and comment.
+          Directors can see reactions. Only audience members can like and share thoughts.
         </p>
       )}
 
-      {(feed.comments.length > 0 || isAudience) && (
+      {(feed.thoughts.length > 0 || isAudience) && (
         <div className="border-t border-line bg-surface-2/40 px-4 sm:px-5 py-3 space-y-3">
-          {feed.comments.length > 2 && !showAll && (
+          {feed.thoughts.length > 2 && !showAll && (
             <button onClick={() => setShowAll(true)} className="text-sm font-semibold text-muted hover:underline cursor-pointer">
-              View all {feed.comments.length} comments
+              View all {feed.thoughts.length} thoughts
             </button>
           )}
-          {visibleComments.map((c) => (
+          {visibleThoughts.map((c) => (
             <div key={c.id} className="flex gap-2.5">
               <Avatar name={c.userName} size={32} />
               <div className="min-w-0">
@@ -328,12 +328,12 @@ function UpdateFeedBody({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (!comment.trim()) return;
+                if (!thought.trim()) return;
                 onError("");
-                addComment({ id: feed.id, text: comment })
+                addThought({ id: feed.id, text: thought })
                   .unwrap()
                   .then(() => {
-                    setComment("");
+                    setThought("");
                     setShowAll(true);
                   })
                   .catch((err) => onError(errorMessage(err)));
@@ -343,18 +343,18 @@ function UpdateFeedBody({
               <Avatar name={user!.name} size={32} />
               <div className="flex-1 relative">
                 <input
-                  ref={commentRef}
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Write a comment…"
+                  ref={thoughtRef}
+                  value={thought}
+                  onChange={(e) => setThought(e.target.value)}
+                  placeholder="Share your thought…"
                   maxLength={1000}
                   className="input !rounded-full !py-2 !pr-11 text-sm"
                 />
                 <button
                   type="submit"
-                  disabled={!comment.trim() || commenting}
+                  disabled={!thought.trim() || postingThought}
                   className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full grid place-items-center text-primary disabled:text-muted/50 hover:bg-primary-soft cursor-pointer disabled:cursor-default disabled:hover:bg-transparent"
-                  aria-label="Send comment"
+                  aria-label="Send thought"
                 >
                   <SendIcon />
                 </button>
@@ -373,7 +373,7 @@ function UpdateFeedBody({
           <Link href="/signup" className="font-semibold text-primary hover:underline">
             create an account
           </Link>{" "}
-          to like and comment.
+          to like and share your thoughts.
         </div>
       )}
     </>

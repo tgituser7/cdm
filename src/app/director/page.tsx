@@ -59,7 +59,7 @@ function Studio({ user }: { user: User }) {
     .filter((p) => p.directorId === user.id)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const totalLikes = mine.reduce((n, p) => n + p.likes.length, 0);
-  const totalComments = mine.reduce((n, p) => n + p.comments.length, 0);
+  const totalThoughts = mine.reduce((n, p) => n + p.thoughts.length, 0);
   const ratings = movies.reduce((n, m) => n + m.ratingCount, 0);
   const reviews = movies.reduce((n, m) => n + m.reviewCount, 0);
   const avg = ratings ? movies.reduce((n, m) => n + (m.average ?? 0) * m.ratingCount, 0) / ratings : null;
@@ -109,7 +109,7 @@ function Studio({ user }: { user: User }) {
             <h2 className="font-bold mb-3">Audience response</h2>
             <div className="grid grid-cols-2 gap-3">
               <Stat label="Likes" value={totalLikes} />
-              <Stat label="Comments" value={totalComments} />
+              <Stat label="Thoughts" value={totalThoughts} />
               <Stat label="Ratings" value={ratings} />
               <Stat label="Reviews" value={reviews} />
               <div className="col-span-2 rounded-xl bg-surface-2 p-3 flex items-center justify-between">
