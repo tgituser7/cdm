@@ -7,7 +7,7 @@ import { formatLocation } from "@/lib/geo";
 import { useAppDispatch, useSession } from "@/store/hooks";
 import { logout, openLocationPrompt } from "@/store/sessionSlice";
 import Avatar from "./Avatar";
-import { FilmIcon, HomeIcon } from "./Icons";
+import { ClapperIcon, FilmIcon, HomeIcon } from "./Icons";
 import Logo from "./Logo";
 
 export default function Header() {
@@ -37,7 +37,7 @@ export default function Header() {
   }
 
   const tab = (href: string, label: string, icon: React.ReactNode) => {
-    const active = pathname === href;
+    const active = href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
     return (
       <Link
         href={href}
@@ -67,6 +67,7 @@ export default function Header() {
 
         <nav className="flex items-center">
           {tab("/", "Feed", <HomeIcon size={22} />)}
+          {tab("/movies", "Movies", <ClapperIcon size={22} filled={false} />)}
           {user?.role === "director" && tab("/director", "My Studio", <FilmIcon size={22} />)}
         </nav>
 

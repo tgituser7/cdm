@@ -7,13 +7,29 @@ export interface FeedArgs {
   filter: FeedFilter;
 }
 
+export type MovieSort = "latest" | "top" | "reviews" | "release" | "title";
+
 export interface MoviesArgs {
   /** A director id, or "me" for the signed-in director */
   director?: string;
-  sort?: "latest" | "top";
+  sort?: MovieSort;
+  /** Search in title / director name */
+  q?: string;
+  genre?: string;
+  language?: string;
+  status?: string;
+  /** Only movies whose ratings are open */
+  open?: boolean;
   /** Only movies that have ratings */
   rated?: boolean;
   limit?: number;
+}
+
+export interface MovieFilterOptions {
+  genres: string[];
+  languages: string[];
+  statuses: string[];
+  directors: { id: string; name: string; movies: number }[];
 }
 
 interface FeedResponse {
@@ -85,11 +101,25 @@ export const feedApi = createApi({
 
     // ---------- Movies ----------
     getMovies: build.query<Movie[], MoviesArgs>({
-      query: ({ director, sort, rated, limit }) => ({
+      query: ({ director, sort, q, genre, language, status, open, rated, limit }) => ({
         url: "/movies",
-        params: { director, sort, rated: rated ? 1 : undefined, limit },
+        params: {
+          director,
+          sort,
+          q: q || undefined,
+          genre: genre || undefined,
+          language: language || undefined,
+          status: status || undefined,
+          open: open ? 1 : undefined,
+          rated: rated ? 1 : undefined,
+          limit,
+        },
       }),
       transformResponse: (res: { movies: Movie[] }) => res.movies,
+      providesTags: ["Movie"],
+    }),
+    getMovieFilters: build.query<MovieFilterOptions, void>({
+      query: () => "/movies/filters",
       providesTags: ["Movie"],
     }),
     getMovie: build.query<Movie, string>({
@@ -196,6 +226,7 @@ export const {
   useAddThoughtMutation,
   useGetMoviesQuery,
   useGetMovieQuery,
+  useGetMovieFiltersQuery,
   useCreateMovieMutation,
   useUpdateMovieMutation,
   useDeleteMovieMutation,
