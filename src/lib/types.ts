@@ -111,7 +111,7 @@ export interface Feed {
   /** The movie the film tag refers to (when it matches one of the director's movies) */
   movieId?: string;
   text: string;
-  /** "/uploads/…" paths on the API server, or absolute URLs */
+  /** "/res/…" paths on the API server, or absolute URLs */
   images: string[];
   movie?: Movie;
   location?: Pick<Location, "city" | "state" | "country">;

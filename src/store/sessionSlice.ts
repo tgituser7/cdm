@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ApiError, apiFetch } from "@/lib/api";
+import { ApiError, apiFetch, sessionToken } from "@/lib/api";
 import type { Location, Role, User } from "@/lib/types";
 import { feedApi } from "./feedApi";
 
@@ -32,7 +32,9 @@ const toRejected = (e: unknown): Rejected =>
 
 export const fetchSession = createAsyncThunk("session/fetch", async () => {
   try {
-    return (await apiFetch<{ user: User | null }>("/auth/me")).user;
+    const { user } = await apiFetch<{ user: User | null }>("/auth/me");
+    if (!user) sessionToken.clear(); // expired or signed out elsewhere
+    return user;
   } catch {
     return null;
   }
@@ -42,7 +44,11 @@ export const login = createAsyncThunk<User, { email: string; password: string; r
   "session/login",
   async (body, { rejectWithValue, dispatch }) => {
     try {
-      const { user } = await apiFetch<{ user: User }>("/auth/login", { method: "POST", body: JSON.stringify(body) });
+      const { user, sessionToken: token } = await apiFetch<{ user: User; sessionToken: string }>("/auth/login", {
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+      sessionToken.set(token, body.remember);
       dispatch(feedApi.util.invalidateTags(["Feeds"]));
       return user;
     } catch (e) {
@@ -55,7 +61,11 @@ export const signup = createAsyncThunk<User, SignupInput, { rejectValue: Rejecte
   "session/signup",
   async (body, { rejectWithValue, dispatch }) => {
     try {
-      const { user } = await apiFetch<{ user: User }>("/auth/signup", { method: "POST", body: JSON.stringify(body) });
+      const { user, sessionToken: token } = await apiFetch<{ user: User; sessionToken: string }>("/auth/signup", {
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+      sessionToken.set(token, true);
       dispatch(feedApi.util.invalidateTags(["Feeds"]));
       return user;
     } catch (e) {
@@ -66,6 +76,7 @@ export const signup = createAsyncThunk<User, SignupInput, { rejectValue: Rejecte
 
 export const logout = createAsyncThunk("session/logout", async (_, { dispatch }) => {
   await apiFetch("/auth/logout", { method: "POST" }).catch(() => {});
+  sessionToken.clear();
   dispatch(feedApi.util.invalidateTags(["Feeds"]));
 });
 

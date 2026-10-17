@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { API_URL } from "@/lib/api";
+import { API_URL, authHeaders } from "@/lib/api";
 import type { FeedFilter, FeedSort, Location, Movie, Feed } from "@/lib/types";
 
 export interface FeedArgs {
@@ -29,7 +29,14 @@ type Api = {
 
 export const feedApi = createApi({
   reducerPath: "feedApi",
-  baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/api`, credentials: "include" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${API_URL}/api`,
+    credentials: "include",
+    prepareHeaders: (headers) => {
+      for (const [k, v] of Object.entries(authHeaders())) headers.set(k, v);
+      return headers;
+    },
+  }),
   tagTypes: ["Feeds", "Feed", "Movie"],
   endpoints: (build) => ({
     // ---------- Feeds ----------

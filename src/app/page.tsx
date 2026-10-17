@@ -123,7 +123,7 @@ function FeedList() {
         {isError && (
           <div className="card p-8 text-center">
             <div className="font-bold">Couldn&apos;t load the feed</div>
-            <p className="text-sm text-muted mt-1">Make sure the backend server is running on port 5000.</p>
+            <p className="text-sm text-muted mt-1">The server may be waking up. Please try again in a few seconds.</p>
             <button onClick={() => refetch()} className="btn btn-soft mt-4">
               Try again
             </button>
