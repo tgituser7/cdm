@@ -1,13 +1,14 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import { type MovieSort, type MoviesArgs, useGetMovieFiltersQuery, useGetMoviesQuery } from "@/store/feedApi";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { type MovieSort, type MoviesArgs, useGetMovieFiltersQuery, useGetMoviePagesInfiniteQuery } from "@/store/feedApi";
 import { useSession } from "@/store/hooks";
 import { CloseIcon } from "./Icons";
 import MovieCard from "./MovieCard";
 
 const SORTS: { value: MovieSort; label: string }[] = [
+  { value: "requested", label: "Recently asked for rating" },
   { value: "latest", label: "Recently added" },
   { value: "top", label: "Top rated" },
   { value: "reviews", label: "Most reviewed" },
@@ -17,7 +18,7 @@ const SORTS: { value: MovieSort; label: string }[] = [
 
 type Filters = { q: string; genre: string; language: string; status: string; director: string; open: boolean; sort: MovieSort };
 
-const DEFAULTS: Filters = { q: "", genre: "", language: "", status: "", director: "", open: false, sort: "latest" };
+const DEFAULTS: Filters = { q: "", genre: "", language: "", status: "", director: "", open: false, sort: "requested" };
 
 function readFilters(params: URLSearchParams): Filters {
   const sort = params.get("sort") as MovieSort | null;
@@ -28,7 +29,7 @@ function readFilters(params: URLSearchParams): Filters {
     status: params.get("status") ?? "",
     director: params.get("director") ?? "",
     open: params.get("open") === "1",
-    sort: sort && SORTS.some((s) => s.value === sort) ? sort : "latest",
+    sort: sort && SORTS.some((s) => s.value === sort) ? sort : "requested",
   };
 }
 
@@ -63,10 +64,38 @@ function Browser() {
     open: filters.open,
     sort: filters.sort,
   };
-  const { data: movies = [], isLoading, isFetching, isError, refetch } = useGetMoviesQuery(args);
+  // `data` keeps the previous results on screen while a new search/filter loads.
+  const { data, isLoading, isFetching, isError, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useGetMoviePagesInfiniteQuery(args);
+  const movies = useMemo(() => data?.pages.flatMap((p) => p.movies) ?? [], [data]);
+  const total = data?.pages[0]?.total ?? 0;
+  const loadingNewResults = isFetching && !isFetchingNextPage && !isLoading;
+
+  // Load the next page when the bottom of the grid comes into view.
+  const sentinel = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el || !hasNextPage) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && !isFetchingNextPage) fetchNextPage();
+      },
+      { rootMargin: "600px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, movies.length]);
+
+  // Latest filters, updated synchronously, so quick successive changes build on each other
+  // instead of on a URL that hasn't caught up yet.
+  const latest = useRef(filters);
+  useEffect(() => {
+    latest.current = filters;
+  }, [filters]);
 
   const update = (patch: Partial<Filters>) => {
-    const next = { ...filters, ...patch };
+    const next = { ...latest.current, ...patch };
+    latest.current = next;
     const qs = new URLSearchParams();
     if (next.q) qs.set("q", next.q);
     if (next.genre) qs.set("genre", next.genre);
@@ -74,7 +103,7 @@ function Browser() {
     if (next.status) qs.set("status", next.status);
     if (next.director) qs.set("director", next.director);
     if (next.open) qs.set("open", "1");
-    if (next.sort !== "latest") qs.set("sort", next.sort);
+    if (next.sort !== "requested") qs.set("sort", next.sort);
     const s = qs.toString();
     router.replace(s ? `${pathname}?${s}` : pathname, { scroll: false });
   };
@@ -153,7 +182,7 @@ function Browser() {
             onClick={() => update({ open: !filters.open })}
             aria-pressed={filters.open}
             className={`rounded-full px-3 py-1.5 text-sm font-semibold border transition cursor-pointer ${
-              filters.open ? "bg-orange-50 border-star text-star" : "border-line text-muted hover:text-text hover:border-muted"
+              filters.open ? "bg-primary-soft border-primary text-primary" : "border-line text-muted hover:text-text hover:border-muted"
             }`}
           >
             🎬 Open for rating
@@ -162,7 +191,7 @@ function Browser() {
             <button
               key={f.key}
               onClick={() => clearOne(f.key)}
-              className="inline-flex items-center gap-1 rounded-full bg-primary-soft text-primary px-3 py-1.5 text-sm font-semibold cursor-pointer hover:bg-[#e2d8fc]"
+              className="inline-flex items-center gap-1 rounded-full bg-primary-soft text-primary px-3 py-1.5 text-sm font-semibold cursor-pointer hover:bg-primary/25"
               aria-label={`Remove filter ${f.label}`}
             >
               {f.label} <CloseIcon size={14} />
@@ -180,7 +209,7 @@ function Browser() {
             </button>
           )}
           <span className="ml-auto text-sm text-muted">
-            {isLoading ? "Loading…" : `${movies.length} movie${movies.length === 1 ? "" : "s"}`}
+            {isLoading ? "Loading…" : loadingNewResults ? "Searching…" : `${total} movie${total === 1 ? "" : "s"}`}
           </span>
         </div>
       </div>
@@ -208,12 +237,27 @@ function Browser() {
         ) : (
           <div
             className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-7 transition-opacity ${
-              isFetching ? "opacity-60" : ""
+              loadingNewResults ? "opacity-60" : ""
             }`}
           >
             {movies.map((m) => (
               <MovieCard key={m.id} movie={m} />
             ))}
+          </div>
+        )}
+        {movies.length > 0 && (
+          <div ref={sentinel} className="mt-10 flex flex-col items-center gap-2 text-sm text-muted">
+            {isFetchingNextPage ? (
+              <span className="inline-flex items-center gap-2">
+                <span className="w-4 h-4 rounded-full border-2 border-line border-t-primary animate-spin" /> Loading more movies…
+              </span>
+            ) : hasNextPage ? (
+              <button onClick={() => fetchNextPage()} className="btn btn-soft">
+                Load more movies
+              </button>
+            ) : (
+              movies.length > 12 && <span>You&apos;ve seen all {total} movies</span>
+            )}
           </div>
         )}
       </div>

@@ -76,6 +76,8 @@ export interface Movie {
   /** Team members with the role the director gave them, e.g. Music Director */
   team: { role: string; name: string }[];
   movieImage?: string;
+  /** Optional wide (16:9) banner for the home hero and movie page */
+  bannerImage?: string;
   trailerUrl?: string;
   ratingRequestedAt?: string;
   /** How many times the director has asked for ratings */

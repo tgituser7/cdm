@@ -1,18 +1,22 @@
 @import "tailwindcss";
 
-/* Light theme: soft lavender canvas, violet-to-pink brand gradient */
+/*
+ * One dark cinematic theme for the whole site.
+ * Brand: violet → pink gradient. Orange is used only for ratings (clapperboards).
+ */
 :root {
-  --bg: #f4f2fa;
-  --surface: #ffffff;
-  --surface-2: #f3f0fa;
-  --line: #e6e1f1;
-  --text: #1d1a2f;
-  --muted: #6e6a85;
-  --primary: #6d28d9;
-  --primary-soft: #ede7fd;
-  --accent: #db2777;
-  --star: #f97316;
-  --like: #e11d48;
+  --bg: #0b0812;
+  --surface: #15111f;
+  --surface-2: #1e1829;
+  --line: #2c2440;
+  --text: #f3f0fa;
+  --muted: #a39cb8;
+  --primary: #a78bfa;
+  --primary-soft: rgb(167 139 250 / 0.14);
+  --accent: #f472b6;
+  --star: #fb923c;
+  --like: #fb7185;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -41,11 +45,16 @@ body {
   color: #fff;
 }
 
+/*
+ * Reusable component classes live in Tailwind's components layer, so utility classes
+ * (hidden, sm:inline-flex, bg-*, rounded-*) placed on the same element override them.
+ */
+@layer components {
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 1rem;
-  box-shadow: 0 1px 2px rgb(29 26 47 / 0.04), 0 4px 16px rgb(109 40 217 / 0.04);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px -12px rgb(0 0 0 / 0.5);
 }
 
 .brand-gradient {
@@ -69,12 +78,12 @@ body {
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 .input::placeholder {
-  color: #9a96ae;
+  color: #6f6787;
 }
 .input:focus {
-  background: #fff;
+  background: var(--surface);
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgb(109 40 217 / 0.12);
+  box-shadow: 0 0 0 3px rgb(167 139 250 / 0.2);
 }
 
 .btn {
@@ -99,17 +108,34 @@ body {
 .btn-primary {
   background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
   color: #fff;
-  box-shadow: 0 4px 14px rgb(124 58 237 / 0.3);
+  box-shadow: 0 6px 20px -6px rgb(124 58 237 / 0.6);
 }
 .btn-primary:hover:not(:disabled) {
-  box-shadow: 0 6px 20px rgb(124 58 237 / 0.4);
+  box-shadow: 0 8px 28px -6px rgb(219 39 119 / 0.65);
+  filter: brightness(1.08);
 }
 .btn-soft {
   background: var(--primary-soft);
   color: var(--primary);
 }
 .btn-soft:hover {
-  background: #e2d8fc;
+  background: rgb(167 139 250 / 0.24);
+}
+/* See-through button for use on images and the hero */
+.btn-glass {
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
+  backdrop-filter: blur(8px);
+}
+.btn-glass:hover {
+  background: rgb(255 255 255 / 0.22);
+}
+.btn-danger {
+  background: #e11d48;
+  color: #fff;
+}
+.btn-danger:hover {
+  background: #f43f5e;
 }
 .btn-ghost {
   color: var(--muted);
@@ -117,6 +143,7 @@ body {
 .btn-ghost:hover {
   background: var(--surface-2);
   color: var(--text);
+}
 }
 
 @keyframes slideUp {
@@ -127,5 +154,84 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ---------- Cinematic home ---------- */
+
+/* Header floating over the dark hero (home page, before scrolling) */
+header[data-over-hero="true"] {
+  background: linear-gradient(to bottom, rgb(9 6 15 / 0.8), rgb(9 6 15 / 0));
+  border-color: transparent;
+  backdrop-filter: none;
+  color: #fff;
+}
+header[data-over-hero="true"] .text-muted {
+  color: rgb(255 255 255 / 0.72);
+}
+header[data-over-hero="true"] .text-primary {
+  color: #fff;
+}
+header[data-over-hero="true"] .btn-ghost {
+  color: #fff;
+}
+header[data-over-hero="true"] .btn-ghost:hover,
+header[data-over-hero="true"] .hover\:bg-surface-2:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+header[data-over-hero="true"] .card {
+  color: var(--text);
+}
+header[data-over-hero="true"] .card .text-muted {
+  color: var(--muted);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Slow zoom on the active hero image */
+@keyframes kenburns {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1.14);
+  }
+}
+
+/* Hero slide progress */
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Outlined rank numbers in the Top 10 row */
+.rank-number {
+  -webkit-text-stroke: 3px rgb(255 255 255 / 0.55);
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe-anim {
+    animation: none !important;
   }
 }

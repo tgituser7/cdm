@@ -69,7 +69,7 @@ export default function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-text/40 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4"
+      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4"
       onMouseDown={(e) => e.target === e.currentTarget && !busy && onClose()}
     >
       <div
@@ -91,7 +91,7 @@ export default function ConfirmDialog({
 
         <div
           className={`w-12 h-12 rounded-2xl grid place-items-center text-2xl ${
-            danger ? "bg-red-50 text-like" : "bg-gradient-to-br from-orange-400 to-pink-500 text-white shadow-lg shadow-pink-500/30"
+            danger ? "bg-like/15 text-like" : "brand-gradient text-white shadow-lg shadow-primary/30"
           }`}
           aria-hidden
         >
@@ -124,7 +124,7 @@ export default function ConfirmDialog({
             type="button"
             onClick={confirm}
             disabled={busy}
-            className={`btn flex-1 !py-3 ${danger ? "bg-like text-white hover:bg-red-700" : "btn-primary"}`}
+            className={`btn flex-1 !py-3 ${danger ? "btn-danger" : "btn-primary"}`}
             autoFocus={!danger}
           >
             {busy ? (busyLabel ?? "Please wait…") : confirmLabel}

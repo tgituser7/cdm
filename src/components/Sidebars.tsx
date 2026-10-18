@@ -9,7 +9,7 @@ import { useGetMoviesQuery } from "@/store/feedApi";
 import { useAppDispatch, useSession } from "@/store/hooks";
 import { openLocationPrompt } from "@/store/sessionSlice";
 import Avatar from "./Avatar";
-import { ClapperIcon, FilmIcon, HomeIcon } from "./Icons";
+import { ClapperIcon, FeedIcon, FilmIcon, HomeIcon } from "./Icons";
 import { MovieImage } from "./MovieRating";
 import { StarsDisplay, formatStars } from "./Stars";
 
@@ -84,17 +84,23 @@ export function LeftSidebar({ feeds }: { feeds: Feed[] }) {
           <span className="w-8 h-8 rounded-lg bg-primary-soft text-primary grid place-items-center">
             <HomeIcon size={18} />
           </span>
+          Home
+        </Link>
+        <Link href="/feed" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-2">
+          <span className="w-8 h-8 rounded-lg bg-primary-soft text-primary grid place-items-center">
+            <FeedIcon size={18} />
+          </span>
           Feed
         </Link>
         <Link href="/movies" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-2">
-          <span className="w-8 h-8 rounded-lg bg-orange-50 text-star grid place-items-center">
+          <span className="w-8 h-8 rounded-lg bg-primary-soft text-primary grid place-items-center">
             <ClapperIcon size={18} />
           </span>
           Movies
         </Link>
         {user?.role === "director" && (
           <Link href="/director" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-2">
-            <span className="w-8 h-8 rounded-lg bg-pink-100 text-accent grid place-items-center">
+            <span className="w-8 h-8 rounded-lg bg-primary-soft text-primary grid place-items-center">
               <FilmIcon size={18} />
             </span>
             My Studio

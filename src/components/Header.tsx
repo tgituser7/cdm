@@ -7,7 +7,7 @@ import { formatLocation } from "@/lib/geo";
 import { useAppDispatch, useSession } from "@/store/hooks";
 import { logout, openLocationPrompt } from "@/store/sessionSlice";
 import Avatar from "./Avatar";
-import { ClapperIcon, FilmIcon, HomeIcon } from "./Icons";
+import { ClapperIcon, FeedIcon, FilmIcon, HomeIcon } from "./Icons";
 import Logo from "./Logo";
 
 export default function Header() {
@@ -16,7 +16,17 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // On the home page the header floats over the cinematic hero until you scroll.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const overHero = pathname === "/" && !scrolled;
 
   useEffect(() => {
     const close = (e: MouseEvent) => {
@@ -54,7 +64,10 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-surface/90 backdrop-blur-md border-b border-line">
+    <header
+      data-over-hero={overHero}
+      className="sticky top-0 z-30 bg-surface/90 backdrop-blur-md border-b border-line transition-colors duration-300"
+    >
       <div className="mx-auto max-w-7xl px-4 h-16 flex items-center">
         <div className="flex-1 flex items-center">
           <span className="hidden sm:flex">
@@ -66,7 +79,8 @@ export default function Header() {
         </div>
 
         <nav className="flex items-center">
-          {tab("/", "Feed", <HomeIcon size={22} />)}
+          {tab("/", "Home", <HomeIcon size={22} />)}
+          {tab("/feed", "Feed", <FeedIcon size={22} />)}
           {tab("/movies", "Movies", <ClapperIcon size={22} filled={false} />)}
           {user?.role === "director" && tab("/director", "My Studio", <FilmIcon size={22} />)}
         </nav>

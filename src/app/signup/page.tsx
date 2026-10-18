@@ -89,7 +89,7 @@ export default function SignupPage() {
 
       <form onSubmit={submit} className="mt-7 space-y-5" noValidate>
         {serverError && (
-          <div role="alert" className="rounded-xl bg-red-50 border border-red-200 text-like text-sm px-4 py-3">
+          <div role="alert" className="rounded-xl bg-like/10 border border-like/30 text-like text-sm px-4 py-3">
             {serverError}
           </div>
         )}
@@ -151,14 +151,14 @@ export default function SignupPage() {
             <div className="text-sm font-bold">Director profile</div>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Based in (city)" error={errors.city}>
-                <input className={`input !bg-white ${errors.city ? "!border-like" : ""}`} value={form.city} onChange={set("city")} placeholder="e.g. Mumbai" autoComplete="address-level2" />
+                <input className={`input !bg-surface ${errors.city ? "!border-like" : ""}`} value={form.city} onChange={set("city")} placeholder="e.g. Mumbai" autoComplete="address-level2" />
               </Field>
               <Field label="State">
-                <input className="input !bg-white" value={form.state} onChange={set("state")} placeholder="e.g. Maharashtra" autoComplete="address-level1" />
+                <input className="input !bg-surface" value={form.state} onChange={set("state")} placeholder="e.g. Maharashtra" autoComplete="address-level1" />
               </Field>
             </div>
             <Field label="About you" hint="Optional">
-              <textarea className="input !bg-white resize-none" rows={2} maxLength={300} value={form.bio} onChange={set("bio")} placeholder="Your films, your style, what you're working on…" />
+              <textarea className="input !bg-surface resize-none" rows={2} maxLength={300} value={form.bio} onChange={set("bio")} placeholder="Your films, your style, what you're working on…" />
             </Field>
           </div>
         )}

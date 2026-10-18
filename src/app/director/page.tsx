@@ -166,7 +166,7 @@ function MoviesTab({ movies, loading }: { movies: Movie[]; loading: boolean }) {
       </div>
 
       {notice && (
-        <div className="rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 flex items-center gap-2">
+        <div className="rounded-xl bg-primary-soft border border-primary/30 text-text text-sm px-4 py-3 flex items-center gap-2">
           ✅ <span className="flex-1">{notice}</span>
           <button onClick={() => setNotice("")} className="font-semibold cursor-pointer">
             Dismiss

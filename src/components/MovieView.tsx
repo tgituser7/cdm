@@ -31,8 +31,8 @@ function MovieById({ id }: { id: string }) {
         <div className="card p-10 text-center">
           <div className="text-xl font-bold">Movie not found</div>
           <p className="text-muted mt-1 text-sm">It may have been removed by the director.</p>
-          <Link href="/" className="btn btn-primary mt-6">
-            Go to Feed
+          <Link href="/movies" className="btn btn-primary mt-6">
+            Browse movies
           </Link>
         </div>
       </div>
@@ -53,16 +53,32 @@ function MovieDetails({ movie }: { movie: Movie }) {
     <div className="pb-12">
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-line bg-surface">
-        {movie.movieImage && (
-          // eslint-disable-next-line @next/next/no-img-element -- decorative blurred backdrop
-          <img src={imageUrl(movie.movieImage)} alt="" className="absolute inset-0 h-full w-full object-cover scale-110 blur-3xl opacity-30" />
+        {movie.bannerImage ? (
+          <div className="relative h-56 sm:h-80 lg:h-[26rem] bg-bg">
+            {/* eslint-disable-next-line @next/next/no-img-element -- user uploads and external URLs */}
+            <img src={imageUrl(movie.bannerImage)} alt="" className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/10 to-black/30" />
+            <Link
+              href="/movies"
+              className="absolute top-4 left-4 sm:left-6 rounded-full bg-black/45 hover:bg-black/60 backdrop-blur px-3 py-1.5 text-sm font-semibold text-white"
+            >
+              ← All movies
+            </Link>
+          </div>
+        ) : (
+          movie.movieImage && (
+            // eslint-disable-next-line @next/next/no-img-element -- decorative blurred backdrop
+            <img src={imageUrl(movie.movieImage)} alt="" className="absolute inset-0 h-full w-full object-cover scale-110 blur-3xl opacity-30" />
+          )
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/70 to-surface" />
-        <div className="relative mx-auto max-w-5xl px-4 py-8 sm:py-12">
-          <Link href="/" className="text-sm font-semibold text-muted hover:text-primary">
-            ← Back to Feed
-          </Link>
-          <div className="mt-6 grid gap-6 sm:grid-cols-[220px_1fr]">
+        {!movie.bannerImage && <div className="absolute inset-0 bg-gradient-to-b from-bg/40 via-bg/80 to-surface" />}
+        <div className={`relative mx-auto max-w-5xl px-4 pb-8 sm:pb-12 ${movie.bannerImage ? "-mt-28 sm:-mt-40" : "pt-8 sm:pt-12"}`}>
+          {!movie.bannerImage && (
+            <Link href="/movies" className="text-sm font-semibold text-muted hover:text-primary">
+              ← All movies
+            </Link>
+          )}
+          <div className={`grid gap-6 sm:grid-cols-[220px_1fr] ${movie.bannerImage ? "" : "mt-6"}`}>
             <MovieImage movie={movie} className="w-44 sm:w-full mx-auto sm:mx-0 shadow-xl" />
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
@@ -71,7 +87,7 @@ function MovieDetails({ movie }: { movie: Movie }) {
                   <span className="text-xs font-bold rounded border border-text/30 px-1.5 py-0.5">{movie.certification}</span>
                 )}
                 {movie.ratingOpen && (
-                  <span className="text-xs font-bold rounded-full px-2.5 py-1 bg-orange-50 text-star">🎬 Open for ratings</span>
+                  <span className="text-xs font-bold rounded-full px-2.5 py-1 brand-gradient text-white">🎬 Open for ratings</span>
                 )}
               </div>
               <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mt-3">

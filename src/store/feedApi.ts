@@ -7,7 +7,8 @@ export interface FeedArgs {
   filter: FeedFilter;
 }
 
-export type MovieSort = "latest" | "top" | "reviews" | "release" | "title";
+/** "requested" = ratings open first, most recently asked first (the Movies page default) */
+export type MovieSort = "requested" | "latest" | "top" | "reviews" | "release" | "title";
 
 export interface MoviesArgs {
   /** A director id, or "me" for the signed-in director */
@@ -23,6 +24,30 @@ export interface MoviesArgs {
   /** Only movies that have ratings */
   rated?: boolean;
   limit?: number;
+}
+
+/** One page of the Movies list (search, filters, sort and paging all happen in the database). */
+export interface MoviePage {
+  movies: Movie[];
+  total: number;
+  page: number;
+  hasMore: boolean;
+}
+
+export const MOVIES_PAGE_SIZE = 24;
+
+function movieListParams({ director, sort, q, genre, language, status, open, rated, limit }: MoviesArgs) {
+  return {
+    director,
+    sort,
+    q: q || undefined,
+    genre: genre || undefined,
+    language: language || undefined,
+    status: status || undefined,
+    open: open ? 1 : undefined,
+    rated: rated ? 1 : undefined,
+    limit,
+  };
 }
 
 export interface MovieFilterOptions {
@@ -101,21 +126,20 @@ export const feedApi = createApi({
 
     // ---------- Movies ----------
     getMovies: build.query<Movie[], MoviesArgs>({
-      query: ({ director, sort, q, genre, language, status, open, rated, limit }) => ({
-        url: "/movies",
-        params: {
-          director,
-          sort,
-          q: q || undefined,
-          genre: genre || undefined,
-          language: language || undefined,
-          status: status || undefined,
-          open: open ? 1 : undefined,
-          rated: rated ? 1 : undefined,
-          limit,
-        },
-      }),
+      query: (args) => ({ url: "/movies", params: movieListParams(args) }),
       transformResponse: (res: { movies: Movie[] }) => res.movies,
+      providesTags: ["Movie"],
+    }),
+    /** The Movies page: 24 at a time, more loaded as you scroll. */
+    getMoviePages: build.infiniteQuery<MoviePage, MoviesArgs, number>({
+      infiniteQueryOptions: {
+        initialPageParam: 0,
+        getNextPageParam: (lastPage, _allPages, lastPageParam) => (lastPage.hasMore ? lastPageParam + 1 : undefined),
+      },
+      query: ({ queryArg, pageParam }) => ({
+        url: "/movies",
+        params: { ...movieListParams(queryArg), page: pageParam, limit: MOVIES_PAGE_SIZE },
+      }),
       providesTags: ["Movie"],
     }),
     getMovieFilters: build.query<MovieFilterOptions, void>({
@@ -205,6 +229,16 @@ function replaceMovie(api: Api, movie: Movie) {
       }),
     );
   }
+  for (const args of feedApi.util.selectCachedArgsForQuery(state, "getMoviePages")) {
+    api.dispatch(
+      feedApi.util.updateQueryData("getMoviePages", args, (draft) => {
+        for (const page of draft.pages) {
+          const i = page.movies.findIndex((m) => m.id === movie.id);
+          if (i !== -1) page.movies[i] = { ...movie, reviews: [], histogram: [] };
+        }
+      }),
+    );
+  }
   for (const args of feedApi.util.selectCachedArgsForQuery(state, "getMovies")) {
     api.dispatch(
       feedApi.util.updateQueryData("getMovies", args, (draft) => {
@@ -227,6 +261,7 @@ export const {
   useGetMoviesQuery,
   useGetMovieQuery,
   useGetMovieFiltersQuery,
+  useGetMoviePagesInfiniteQuery,
   useCreateMovieMutation,
   useUpdateMovieMutation,
   useDeleteMovieMutation,

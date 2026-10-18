@@ -37,6 +37,9 @@ export default function MovieFormDialog({ movie, onClose, onSaved }: { movie?: M
   const [team, setTeam] = useState<TeamMember[]>(movie?.team.length ? movie.team : [{ role: "", name: "" }]);
   const [movieImage, setMovieImage] = useState<{ blob: Blob; preview: string } | null>(null);
   const [removeMovieImage, setRemoveMovieImage] = useState(false);
+  const [banner, setBanner] = useState<{ blob: Blob; preview: string } | null>(null);
+  const [removeBanner, setRemoveBanner] = useState(false);
+  const bannerRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -71,6 +74,24 @@ export default function MovieFormDialog({ movie, onClose, onSaved }: { movie?: M
 
   const currentMovieImage = movieImage?.preview ?? (!removeMovieImage && movie?.movieImage ? imageUrl(movie.movieImage) : null);
 
+  useEffect(() => () => {
+    if (banner) URL.revokeObjectURL(banner.preview);
+  }, [banner]);
+
+  const pickBanner = async (file?: File) => {
+    if (!file) return;
+    try {
+      const blob = await compressImage(file, 2400, 0.85);
+      setBanner({ blob, preview: URL.createObjectURL(blob) });
+      setRemoveBanner(false);
+    } catch {
+      setError("Couldn't read that image.");
+    }
+    if (bannerRef.current) bannerRef.current.value = "";
+  };
+
+  const currentBanner = banner?.preview ?? (!removeBanner && movie?.bannerImage ? imageUrl(movie.bannerImage) : null);
+
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) return setError("Please enter the movie title.");
@@ -84,6 +105,8 @@ export default function MovieFormDialog({ movie, onClose, onSaved }: { movie?: M
     body.append("team", JSON.stringify(filledTeam));
     if (movieImage) body.append("movieImage", movieImage.blob, "movie-image.jpg");
     if (removeMovieImage && !movieImage) body.append("removeMovieImage", "true");
+    if (banner) body.append("bannerImage", banner.blob, "banner-image.jpg");
+    if (removeBanner && !banner) body.append("removeBannerImage", "true");
 
     setError("");
     try {
@@ -97,7 +120,7 @@ export default function MovieFormDialog({ movie, onClose, onSaved }: { movie?: M
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-text/40 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4"
+      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4"
       onMouseDown={(e) => e.target === e.currentTarget && !saving && onClose()}
     >
       <form
@@ -164,6 +187,46 @@ export default function MovieFormDialog({ movie, onClose, onSaved }: { movie?: M
                 <textarea className="input resize-none" rows={4} value={form.synopsis} onChange={set("synopsis")} placeholder="What is the movie about?" maxLength={4000} />
               </Field>
             </div>
+          </div>
+
+          {/* Banner (wide) */}
+          <div>
+            <div className="flex items-baseline justify-between mb-1.5">
+              <span className="text-sm font-semibold">
+                Banner image <span className="text-muted font-normal">(optional, wide 16:9)</span>
+              </span>
+              <span className="text-xs text-muted">Shown big on the home page and movie page</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => bannerRef.current?.click()}
+              className="relative w-full aspect-[16/7] rounded-xl overflow-hidden border-2 border-dashed border-line hover:border-primary bg-surface-2 grid place-items-center text-muted cursor-pointer group"
+            >
+              {currentBanner ? (
+                // eslint-disable-next-line @next/next/no-img-element -- local preview or uploaded banner
+                <img src={currentBanner} alt="" className="absolute inset-0 h-full w-full object-cover" />
+              ) : (
+                <span className="flex flex-col items-center gap-1 text-xs font-semibold">
+                  <PhotoIcon size={26} />
+                  Upload banner image
+                </span>
+              )}
+              {currentBanner && (
+                <span className="absolute inset-x-0 bottom-0 bg-black/55 text-white text-xs font-semibold py-1.5 opacity-0 group-hover:opacity-100 transition">
+                  Change banner image
+                </span>
+              )}
+            </button>
+            {currentBanner && (
+              <button
+                type="button"
+                onClick={() => (setBanner(null), setRemoveBanner(true))}
+                className="text-xs text-like hover:underline mt-1.5 cursor-pointer"
+              >
+                Remove banner image
+              </button>
+            )}
+            <input ref={bannerRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => pickBanner(e.target.files?.[0])} />
           </div>
 
           {/* Facts */}

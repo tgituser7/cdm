@@ -72,7 +72,7 @@ function LocationDialog({ current }: { current?: Location }) {
   const set = (k: keyof Location) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   return (
-    <div className="fixed inset-0 z-50 bg-text/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div role="dialog" aria-modal="true" aria-labelledby="loc-title" className="card w-full sm:max-w-md rounded-b-none sm:rounded-2xl p-6 relative animate-[slideUp_.25s_ease-out]">
         <button
           onClick={() => dispatch(closeLocationPrompt())}

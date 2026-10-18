@@ -111,7 +111,7 @@ export default function ShareDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-text/40 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4"
+      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4"
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div role="dialog" aria-modal="true" aria-labelledby={titleId} className="card w-full sm:max-w-md rounded-b-none sm:rounded-2xl p-6 relative animate-[slideUp_.2s_ease-out]">
@@ -160,7 +160,7 @@ export default function ShareDialog({
               className="input flex-1 min-w-0 text-sm"
               aria-label="Feed link"
             />
-            <button type="button" onClick={copy} className={`btn shrink-0 ${copied ? "bg-emerald-500 text-white" : "btn-primary"}`}>
+            <button type="button" onClick={copy} className={`btn shrink-0 ${copied ? "btn-soft" : "btn-primary"}`}>
               {copied ? "✓ Copied" : "Copy link"}
             </button>
           </span>

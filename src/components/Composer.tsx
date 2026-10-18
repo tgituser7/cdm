@@ -176,7 +176,7 @@ export default function Composer() {
       <div className="mt-4 pt-3 border-t border-line flex items-center gap-1 flex-wrap">
         <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden onChange={(e) => onFiles(e.target.files)} />
         <button type="button" onClick={() => fileRef.current?.click()} disabled={busy || images.length >= MAX_IMAGES} className="btn btn-ghost !px-3">
-          <PhotoIcon className="text-emerald-500" /> {busy ? "Adding…" : "Image"}
+          <PhotoIcon className="text-primary" /> {busy ? "Adding…" : "Image"}
         </button>
         <button type="button" onClick={() => setShowFilm(true)} className="btn btn-ghost !px-3">
           <FilmIcon className="text-primary" /> Tag film

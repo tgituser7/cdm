@@ -34,7 +34,7 @@ export default function RatingRequestActions({ movie, onAsk, size = "md" }: { mo
   return (
     <>
       {movie.ratingOpen && movie.ratingFeedId && (
-        <Link href={`/feeds/${movie.ratingFeedId}`} className={`btn ${pad} bg-emerald-50 text-emerald-700 hover:bg-emerald-100`}>
+        <Link href={`/feeds/${movie.ratingFeedId}`} className={`btn ${pad} btn-soft`}>
           ✓ Rating open · View feed
         </Link>
       )}

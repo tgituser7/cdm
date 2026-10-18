@@ -3,6 +3,7 @@ import { STATUS_STYLES, formatRuntime, movieYear } from "@/lib/movie";
 import type { Movie } from "@/lib/types";
 import { MovieImage } from "./MovieRating";
 import { StarsDisplay, formatStars } from "./Stars";
+import TimeAgo from "./TimeAgo";
 
 /** A movie in the Movies grid: image, title, director, key facts and its rating. */
 export default function MovieCard({ movie }: { movie: Movie }) {
@@ -16,7 +17,7 @@ export default function MovieCard({ movie }: { movie: Movie }) {
           {movie.status}
         </span>
         {movie.ratingOpen && (
-          <span className="absolute top-2 right-2 text-[10px] font-bold rounded-full px-2 py-0.5 bg-white/95 text-star shadow-sm">
+          <span className="absolute top-2 right-2 text-[10px] font-bold rounded-full px-2 py-0.5 brand-gradient text-white shadow-sm">
             🎬 Rate now
           </span>
         )}
@@ -42,6 +43,11 @@ export default function MovieCard({ movie }: { movie: Movie }) {
             <span className="text-muted">{movie.ratingOpen ? "Be the first to rate" : "Not rated yet"}</span>
           )}
         </div>
+        {movie.ratingOpen && movie.ratingRequestedAt && (
+          <div className="mt-1 text-[11px] font-semibold text-primary">
+            Rating asked <TimeAgo iso={movie.ratingRequestedAt} />
+          </div>
+        )}
       </div>
     </Link>
   );

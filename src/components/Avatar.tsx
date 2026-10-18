@@ -20,7 +20,7 @@ export default function Avatar({ name, size = 40, ring = false }: { name: string
   return (
     <span
       className={`inline-flex items-center justify-center rounded-full font-bold text-white shrink-0 select-none ${
-        ring ? "ring-[3px] ring-white shadow-md" : ""
+        ring ? "ring-[3px] ring-surface shadow-md" : ""
       }`}
       style={{ width: size, height: size, fontSize: size * 0.38, background: GRADIENTS[hash % GRADIENTS.length] }}
       aria-hidden

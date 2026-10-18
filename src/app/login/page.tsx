@@ -48,7 +48,7 @@ export default function LoginPage() {
 
       <form onSubmit={submit} className="mt-8 space-y-5" noValidate>
         {error && (
-          <div role="alert" className="rounded-xl bg-red-50 border border-red-200 text-like text-sm px-4 py-3">
+          <div role="alert" className="rounded-xl bg-like/10 border border-like/30 text-like text-sm px-4 py-3">
             {error}
           </div>
         )}

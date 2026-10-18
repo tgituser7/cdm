@@ -23,7 +23,7 @@ export function youtubeEmbed(url?: string) {
 }
 
 export const STATUS_STYLES: Record<Movie["status"], string> = {
-  Announced: "bg-sky-50 text-sky-700",
-  "Releasing soon": "bg-pink-50 text-pink-700",
-  Released: "bg-emerald-50 text-emerald-700",
+  Announced: "bg-black/55 text-white backdrop-blur-sm",
+  "Releasing soon": "bg-black/55 text-white backdrop-blur-sm",
+  Released: "bg-black/55 text-white backdrop-blur-sm",
 };

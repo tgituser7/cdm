@@ -12,7 +12,7 @@ export default function FeedView() {
   return (
     <div className="mx-auto max-w-[680px] px-3 sm:px-4 py-6">
       <Link
-        href="/"
+        href="/feed"
         className="text-sm font-semibold text-muted hover:text-primary"
       >
         ← Back to Feed
@@ -41,7 +41,7 @@ function FeedById({ id }: { id: string }) {
           <p className="text-muted mt-1 text-sm">
             It may have been deleted by the director.
           </p>
-          <Link href="/" className="btn btn-primary mt-6">
+          <Link href="/feed" className="btn btn-primary mt-6">
             Go to Feed
           </Link>
         </div>

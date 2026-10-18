@@ -47,14 +47,14 @@ export default function FeedCard({ feed, expanded = false }: { feed: Feed; expan
   }, [menu]);
 
   return (
-    <article className={`card overflow-hidden ${isRating ? "ring-1 ring-star/30" : ""}`}>
+    <article className={`card overflow-hidden ${isRating ? "ring-1 ring-primary/30" : ""}`}>
       {isRating && (
-        <div className="bg-gradient-to-r from-orange-50 via-pink-50 to-violet-50 px-4 sm:px-5 py-2 text-xs font-bold uppercase tracking-wider text-star flex items-center gap-2 border-b border-line">
+        <div className="bg-gradient-to-r from-primary/20 via-accent/10 to-transparent px-4 sm:px-5 py-2 text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b border-line">
           🎬 Rate &amp; Review
           <span className="text-muted font-semibold normal-case tracking-normal truncate">· {feed.directorName} wants your rating</span>
           <button
             onClick={openShare}
-            className="ml-auto shrink-0 inline-flex items-center gap-1.5 rounded-full bg-white/80 hover:bg-white px-3 py-1 text-xs font-semibold normal-case tracking-normal text-text cursor-pointer"
+            className="ml-auto shrink-0 inline-flex items-center gap-1.5 rounded-full bg-surface-2 hover:bg-line px-3 py-1 text-xs font-semibold normal-case tracking-normal text-text cursor-pointer"
           >
             <ShareIcon size={14} /> Share
           </button>
@@ -71,7 +71,7 @@ export default function FeedCard({ feed, expanded = false }: { feed: Feed; expan
               Director
             </span>
             {feed.proximity === "city" && (
-              <span className="text-[10px] font-bold uppercase tracking-wide text-emerald-700 bg-emerald-50 rounded px-1.5 py-0.5">
+              <span className="text-[10px] font-bold uppercase tracking-wide text-primary bg-primary-soft rounded px-1.5 py-0.5">
                 Near you
               </span>
             )}

@@ -40,6 +40,11 @@ export default function PhotoGrid({ images, alt }: { images: string[]; alt: stri
                 shown.length === 1 ? "max-h-[560px] object-cover" : "h-full object-cover"
               }`}
               loading="lazy"
+              onError={(e) => {
+                // Missing file: show a quiet placeholder instead of a broken-image icon.
+                e.currentTarget.style.visibility = "hidden";
+                e.currentTarget.parentElement?.classList.add("min-h-48", "brand-gradient", "opacity-40");
+              }}
             />
             {extra > 0 && i === 3 && (
               <span className="absolute inset-0 bg-black/55 grid place-items-center text-white text-3xl font-bold">

@@ -112,3 +112,14 @@ export function ShareIcon({ className = "", size = 20 }: P) {
     </svg>
   );
 }
+
+/** Stacked cards — the Feed. */
+export function FeedIcon({ className = "", size = 20 }: P) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} className={className} fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinejoin="round" aria-hidden>
+      <rect x="4" y="3.5" width="16" height="7" rx="2" />
+      <rect x="4" y="13.5" width="16" height="7" rx="2" />
+      <path d="M7.5 7h6M7.5 17h9" strokeLinecap="round" />
+    </svg>
+  );
+}

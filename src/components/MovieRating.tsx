@@ -17,11 +17,19 @@ const errorMessage = (e: unknown) =>
 
 /** Movie image, or a gradient placeholder with the title. */
 export function MovieImage({ movie, className = "" }: { movie: Pick<Movie, "title" | "movieImage">; className?: string }) {
+  // Falls back to the gradient placeholder if the image is missing or fails to load.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const showImage = !!movie.movieImage && failedSrc !== movie.movieImage;
   return (
     <div className={`relative aspect-[2/3] overflow-hidden rounded-xl bg-surface-2 shadow-md ${className}`}>
-      {movie.movieImage ? (
+      {showImage ? (
         // eslint-disable-next-line @next/next/no-img-element -- user uploads and external URLs
-        <img src={imageUrl(movie.movieImage)} alt={`${movie.title} movie image`} className="h-full w-full object-cover" />
+        <img
+          src={imageUrl(movie.movieImage!)}
+          alt={`${movie.title} movie image`}
+          className="h-full w-full object-cover"
+          onError={() => setFailedSrc(movie.movieImage!)}
+        />
       ) : (
         <div className="brand-gradient h-full w-full flex flex-col justify-end p-3 text-white">
           <FilmIcon size={20} className="opacity-70 mb-auto" />
@@ -111,7 +119,7 @@ export function RateAndReview({ movie, initiallyOpen }: { movie: Movie; initiall
       <div className="grid grid-cols-2 gap-2">
         <button
           onClick={() => setPanel((p) => (p === "rate" ? null : "rate"))}
-          className={`btn !py-2.5 ${movie.myRating ? "bg-orange-50 text-star" : "btn-soft"} ${panel === "rate" ? "ring-2 ring-star/40" : ""}`}
+          className={`btn !py-2.5 ${movie.myRating ? "bg-star/15 text-star" : "btn-soft"} ${panel === "rate" ? "ring-2 ring-star/40" : ""}`}
         >
           <ClapperIcon size={18} filled={!!movie.myRating} />
           {movie.myRating ? `Rated ${formatStars(movie.myRating)}` : "Rate"}

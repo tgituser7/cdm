@@ -11,7 +11,7 @@ import { CLAPPER_PATH } from "./Icons";
 function Clapper({ fill, size }: { fill: number; size: number }) {
   return (
     <span className="relative inline-block" style={{ width: size, height: size }}>
-      <svg viewBox="0 0 24 24" width={size} height={size} className="absolute inset-0 text-line">
+      <svg viewBox="0 0 24 24" width={size} height={size} className="absolute inset-0 text-white/15">
         <path fill="currentColor" fillRule="evenodd" d={CLAPPER_PATH} />
       </svg>
       <span className="absolute inset-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
