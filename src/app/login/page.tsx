@@ -8,11 +8,6 @@ import PasswordInput from "@/components/PasswordInput";
 import { useAppDispatch, useSession } from "@/store/hooks";
 import { login } from "@/store/sessionSlice";
 
-const DEMO = [
-  { label: "Audience · Bengaluru", email: "rohit@demo.in" },
-  { label: "Director · Bengaluru", email: "anaya@demo.in" },
-];
-
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -97,25 +92,6 @@ export default function LoginPage() {
           Create an account
         </Link>
       </p>
-
-      <div className="mt-8 rounded-2xl border border-dashed border-line p-4">
-        <div className="text-xs font-semibold text-muted uppercase tracking-wider">Demo accounts</div>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {DEMO.map((d) => (
-            <button
-              key={d.email}
-              type="button"
-              onClick={() => (setEmail(d.email), setPassword("password123"))}
-              className="text-xs rounded-full bg-surface-2 hover:bg-primary-soft hover:text-primary px-3 py-1.5 cursor-pointer"
-            >
-              {d.label}
-            </button>
-          ))}
-        </div>
-        <p className="text-xs text-muted mt-2">
-          Password for all demo accounts: <code className="font-semibold">password123</code>
-        </p>
-      </div>
     </AuthShell>
   );
 }

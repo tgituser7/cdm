@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { imageUrl } from "@/lib/api";
+import { hideBrokenImage, imageUrl } from "@/lib/api";
 import { formatRuntime, movieYear } from "@/lib/movie";
 import type { Movie } from "@/lib/types";
 import { ClapperIcon } from "../Icons";
@@ -113,7 +113,7 @@ export default function HeroCarousel({ movies }: { movies: Movie[] }) {
                   }`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element -- user uploads and external URLs */}
-                  <img src={imageUrl(m.bannerImage ?? m.movieImage ?? "")} alt="" className="h-full w-full object-cover" />
+                  <img src={imageUrl(m.bannerImage ?? m.movieImage ?? "")} alt="" className="h-full w-full object-cover" onError={hideBrokenImage} />
                   <span className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                   <span className="absolute bottom-1.5 left-2 right-2 text-left text-[11px] font-semibold leading-tight line-clamp-1">
                     {m.title}
@@ -177,6 +177,7 @@ function Slide({
         // eslint-disable-next-line @next/next/no-img-element -- user uploads and external URLs
         <img
           src={imageUrl(banner)}
+          onError={hideBrokenImage}
           alt=""
           className={`absolute inset-0 h-full w-full object-cover motion-safe-anim ${usesBanner ? "" : "blur-2xl scale-125 opacity-70"}`}
           style={active && usesBanner ? { animation: "kenburns 14s ease-out forwards" } : undefined}

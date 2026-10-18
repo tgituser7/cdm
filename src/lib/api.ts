@@ -76,3 +76,9 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
 export function imageUrl(src: string) {
   return src.startsWith("/res/") ? `${API_URL}${src}` : src;
 }
+
+/** onError handler for decorative images: hide a missing file and show the brand gradient behind it instead. */
+export function hideBrokenImage(e: { currentTarget: HTMLImageElement }) {
+  e.currentTarget.style.visibility = "hidden";
+  e.currentTarget.parentElement?.classList.add("brand-gradient");
+}

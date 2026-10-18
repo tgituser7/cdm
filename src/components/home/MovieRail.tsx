@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { imageUrl } from "@/lib/api";
+import { hideBrokenImage, imageUrl } from "@/lib/api";
 import { movieYear } from "@/lib/movie";
 import type { Movie } from "@/lib/types";
 import { ClapperIcon } from "../Icons";
@@ -159,7 +159,7 @@ function BannerCard({ movie }: { movie: Movie }) {
     >
       {img ? (
         // eslint-disable-next-line @next/next/no-img-element -- user uploads and external URLs
-        <img src={imageUrl(img)} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+        <img src={imageUrl(img)} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" onError={hideBrokenImage} />
       ) : (
         <div className="absolute inset-0 brand-gradient" />
       )}
